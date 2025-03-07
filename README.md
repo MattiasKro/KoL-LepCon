@@ -15,4 +15,4 @@ Also what locations you are still missing furnitures from.
 
 ## Example:
 
-![bild](https://github.com/user-attachments/assets/017adde3-8b43-490d-8417-4086f294c898)
+![bild](https://github.com/user-attachments/assets/7246e45a-47a5-4e63-87ed-eb1146251566)
