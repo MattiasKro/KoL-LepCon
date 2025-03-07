@@ -59,36 +59,6 @@ string [string] shortNeeds = {
     "food": "food",
     "mental stimulation": "stim."
 };
-/*
-    1: { "id":"1", "name":"buckets of concrete", "location":"Any zone with hiding place", "need1":"exercise", "need2":""},
-    2: { "id":"2", "name":"thrift store oil painting", "location":"Any zone with hiding place", "need1":"mental stim.", "need2":""},
-    3: { "id":"3", "name":"boxes of old comic books", "location":"Any zone with hiding place", "need1":"entertainment", "need2":""},
-    4: { "id":"4", "name":"second-hand hot plate", "location":"Any zone with hiding place", "need1":"food", "need2":""},
-    5: { "id":"5", "name":"beer cooler", "location":"Any zone with hiding place", "need1":"booze", "need2":""},
-    6: { "id":"6", "name":"free mattress", "location":"Any zone with hiding place", "need1":"sleep", "need2":""},
-    7: { "id":"7", "name":"Giant chess set", "location":"An Octopus Garden", "need1":"exercise", "need2":"mental stim."},
-    8: { "id":"8", "name":"UltraDance karaoke machine", "location":"Infernal Rackets Backstage", "need1":"exercise", "need2":"entertainment"},
-    9: { "id":"9", "name":"cupcake treadmill", "location":"Madness Bakery", "need1":"exercise", "need2":"food"},
-    10: { "id":"10", "name":"beer pong table", "location":"The Orcish Frat House", "need1":"exercise", "need2":"booze "},
-    11: { "id":"11", "name":"padded weight bench", "location":"The Degrassi Knoll Garage", "need1":"exercise", "need2":"sleep"},
-    12: { "id":"12", "name":"internet-connected laptop", "location":"The Hidden Office Building", "need1":"mental stim.", "need2":"entertainment"},
-    13: { "id":"13", "name":"sous vide laboratory", "location":"The Haunted Kitchen", "need1":"mental stim.", "need2":"food"},
-    14: { "id":"14", "name":"programmable blender", "location":"Cobb's Knob Kitchens", "need1":"mental stim.", "need2":"booze "},
-    15: { "id":"15", "name":"sensory deprivation tank", "location":"The Marinara Trench", "need1":"mental stim.", "need2":"sleep"},
-    16: { "id":"16", "name":"fruit-smashing robot", "location":"The Hippy Camp (Verge of War) (In Frat Boy Ensemble or Frat Warrior Fatigues)", "need1":"entertainment", "need2":"food"},
-    17: { "id":"17", "name":"ManCave™ sports bar set", "location":"A Barroom Brawl", "need1":"entertainment", "need2":"booze"},
-    18: { "id":"18", "name":"?unknown?", "location":"?unknown?", "need1":"entertainment", "need2":"sleep"},
-    19: { "id":"19", "name":"kegerator", "location":"The Orcish Frat House (Bombed Back to the Stone Age)", "need1":"food", "need2":"booze"},
-    20: { "id":"20", "name":"fine upholstered dining set", "location":"The Hidden Apartment Building", "need1":"food", "need2":"sleep"},
-    21: { "id":"21", "name":"whiskeybed", "location":"The Castle in the Clouds in the Sky (Ground Floor)", "need1":"booze", "need2":"sleep"},
-    22: { "id":"22", "name":"high-end home workout system", "location":"The Degrassi Knoll Gym", "need1":"exercise", "need2":""},
-    23: { "id":"23", "name":"complete classics library", "location":"Haunted Library", "need1":"mental stim.", "need2":""},
-    24: { "id":"24", "name":"ultimate retro game console", "location":"Megalo-City", "need1":"entertainment", "need2":""},
-    25: { "id":"25", "name":"Omnipot", "location":"Cobb's Knob Laboratory", "need1":"food", "need2":""},
-    26: { "id":"26", "name":"fully-stocked wet bar", "location":"The Purple Light District", "need1":"booze", "need2":""},
-    27: { "id":"27", "name":"four-poster bed", "location":"Dreadsylvanian Castle", "need1":"sleep", "need2":""}
-};
-*/
 
 string getNeedForFurnitureId(int id, int need) {
     return allFurnitures[id, "need" + to_string(need)];
@@ -106,7 +76,7 @@ string makeOption(FurnitureItem fi, LepRoom room) {
         needs += ", " + shortNeeds[allFurnitures[fi.id, "need2"]];
     }
     needs += ")";
-    result += "value =\"" + idStr + "\" data-id=\"" + idstr + "\" data-pic=\"" + fi.datapic + "\">" + fi.name + " " + needs + "</option>\n\r";
+    result += "value=\"" + idStr + "\" data-id=\"" + idStr + "\" data-pic=\"" + fi.datapic + "\">" + fi.name + " " + needs + "</option>\n\r";
 
     return result;
 }
@@ -121,24 +91,21 @@ string makeComboBox(LepStuff lepData, int roomNo) {
     }
 
     result += "</select>\n\r";
-
     result += "<div class=\"lep-effect\" id=\"lep-id-r" + to_string(roomNo) + "-1\"></div>";
     result += "<div class=\"lep-effect\" id=\"lep-id-r" + to_string(roomNo) + "-2\"></div>";
 
     return result;
 }
 
-//Helper functions (to be moved to another file)
 LepStuff getRooms(string pageData) {
     LepStuff result;
     matcher roommatcher = create_matcher("<select id=\"r(\\d+)\" name=\"r(\\d+)\">(.*?)<\\/select>", pageData);
     while (find(roommatcher)) {
         LepRoom curRoom;
-        curRoom.no =  to_int(group(roommatcher,1));
+        curRoom.no = to_int(group(roommatcher, 1));
         string stuff = group(roommatcher, 3);
         matcher stuffmatcher = create_matcher("<option (.*?)value=\'(\\d+)\' data-id=\'(.*?)\' data-pic=\'(.*?)\'>(.*?)<\\/option>", stuff);
         while (find(stuffmatcher)) {
-//            print ("Match");
             string selected = group(stuffmatcher, 1);
             int stuffid = to_int(group(stuffmatcher, 2));
             if (index_of(selected, "selected") >= 0) {
@@ -162,7 +129,7 @@ LepStuff getRooms(string pageData) {
 
     boolean [string] needsUsed;
     foreach key in result.rooms {
-        LepRoom curRoom = result.rooms[3-key];
+        LepRoom curRoom = result.rooms[3 - key];
         if (needsUsed contains curRoom.need1) {
             curRoom.need1active = false;
         } else {
@@ -176,16 +143,7 @@ LepStuff getRooms(string pageData) {
             needsUsed[curRoom.need2] = true;
         }
     }
-/*
-    print("Needs fulfilled:");
-    foreach n in needsUsed {
-        print("* "+n);
-    }
-    print("Room status");
-    foreach i, r in result.rooms {
-        print (to_string(i) + ": " + to_string(r.need1active) + ", " + to_string(r.need2active));
-    }
-*/
+
     return result;
 }
 
@@ -206,10 +164,8 @@ string insertIntoFromThisToThat(string fullText, string insertedText, string sta
     return fullText.substring(0, startPos) + insertedText + fullText.substring(endPos);
 }
 
-//Choice	override
-void main(string page_text_encoded)
-{
-	string page_text = page_text_encoded.choiceOverrideDecodePageText();
+void main(string page_text_encoded) {
+    string page_text = page_text_encoded.choiceOverrideDecodePageText();
     string newPage;
 
     LepStuff ls = getRooms(page_text);
@@ -228,7 +184,7 @@ void main(string page_text_encoded)
             if (curRoom.need2active) {
                 needs += need2;
             } else {
-                needs +=  "<s>" + need2 + "</s> [inactive]";
+                needs += "<s>" + need2 + "</s> [inactive]";
             }
         }
         currentConfig += "Room " + to_string(curRoom.no + 1) + ": " + ls.furnitures[curRoom.furniture].name + " (" + needs + ")<br>";
@@ -245,7 +201,7 @@ void main(string page_text_encoded)
             }
         }
     }
-    
+
     if (missingMessage.length() > 0) {
         newPage = page_text.replace_string("</a></center>", "</a><br><br>" + currentConfig + missingMessage + "</center>");
     }
@@ -256,12 +212,9 @@ void main(string page_text_encoded)
         newPage = insertIntoFromThisToThat(newPage, makeComboBox(ls, n), fromStr, "</select>");
     }
 
-// Add js include file and css for frontend magic, 
     newPage = newPage.replace_string("</head>", "<script type=\"text/javascript\" src=\"LepCon.js\"></script></head>");
     newPage = newPage.replace_string("</head>", "<link rel=\"stylesheet\" type=\"text/css\" href=\"LepCon.css\"></head>");
 
-
-// Add event listeners at the end of the HTML
     buffer newFooter;
     newFooter.append("<script>\n");
     newFooter.append('const dropdowns = document.querySelectorAll(".lep-choice");\n');
@@ -269,13 +222,10 @@ void main(string page_text_encoded)
     newFooter.append("</script>\n");
 
     int startPos = newPage.last_index_of("</table>");
-    int endPos = newPage.last_index_of("</table>") + length("</table>");
+    int endPos = startPos + length("</table>");
     if (startPos > 0) {
-//        newPage.replace(startPos, endPos, "</table>" + newFooter);
         newPage = newPage.substring(0, startPos) + newFooter + newPage.substring(endPos);
     }
 
-
-//    page_text.write();
-    newPage.write();	
+    newPage.write();
 }
