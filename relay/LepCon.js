@@ -35,6 +35,30 @@ function emptyChoice(id) {
     document.getElementById("lep-id-"+id+"-2").className = "lep-effect";
 }
 
+function checkNeeds() {
+    var fulfilled = Array();
+    for (var id = 3; id >= 0; id--) {
+        sel = $('#r' + id);
+//        console.log("-- Room r"+id);
+        if (sel.val().length > 0) {
+            for (var effect = 0; effect < 2; effect++) {
+                var need = __lepcon_effects[sel.val()-1][2*effect];
+                if (need.length > 0) {
+//                    console.log(" - Fulfilling need " + (effect + 1) + " for " + need);
+                    if (fulfilled.includes(need)) {
+                        document.getElementById("lep-id-r"+id+"-"+(effect+1)).classList.add("inactive");
+//                        console.log(" - " + id + "-" + (effect+1) + " inactive");
+                    } else {
+                        document.getElementById("lep-id-r"+id+"-"+(effect+1)).classList.remove("inactive");
+                        fulfilled.push(need);
+//                        console.log(" - " + id + "-" + (effect+1) + " active");
+                    }
+                }
+            }
+        }
+    }
+}
+
 function handleFurniture(event) {
 //    event.stopPropagation();
     const source = event.target || event.srcElement;
@@ -54,4 +78,5 @@ function handleFurniture(event) {
     } else {
         emptyChoice(source.id);
     }
+    checkNeeds();
 }
