@@ -171,9 +171,13 @@ string [int] missingFurniture(FurnitureItem [int] usedFurniture) {
 
 string insertIntoFromThisToThat(string fullText, string insertedText, string startText, string endText) {
     int startPos = fullText.index_of(startText);
-    int endPos = fullText.index_of(endText, startPos) + endText.length();
-
-    return fullText.substring(0, startPos) + insertedText + fullText.substring(endPos);
+    if (startPos > 0) {
+        int endPos = fullText.index_of(endText, startPos) + endText.length();
+        if (endPos > 0) {
+            return fullText.substring(0, startPos) + insertedText + fullText.substring(endPos);
+        }
+    }
+    return fullText;
 }
 
 void main(string page_text_encoded) {
@@ -205,19 +209,17 @@ void main(string page_text_encoded) {
 
     string missingMessage = "";
     string [int] missing = missingFurniture(ls.furnitures);
-    if (missing.length() > 0) {
-        missingMessage = "<strong>Missing furniture from the following locations:</strong><br>";
-        foreach key, val in missing {
-            if (val.length() > 0) {
-                missingMessage += val + "<br>";
-            }
+    foreach key, val in missing {
+        if (val.length() > 0) {
+            missingMessage += val + "<br>";
         }
     }
-
     if (missingMessage.length() > 0) {
+        missingMessage = "<strong>Missing furniture from the following locations:</strong><br>" + missingMessage;
         newPage = page_text.replace_string("</a></center>", "</a><br><br>" + currentConfig + missingMessage + "</center>");
+    } else {
+        newPage = page_text.replace_string("</a></center>", "</a><br><br>" + currentConfig + "</center>");
     }
-    newPage.replace_string("top left", "top left room");
 
     for n from 0 to 3 {
         string fromStr = "<select id=\"r" + to_string(n);
