@@ -94,12 +94,12 @@ string makeComboBox(LepStuff lepData, int roomNo) {
     string c1 = (lr.need1.length() > 0) ? " " + lr.need1.replace_string(" ", "-") + (lr.need1active ? "" : " inactive") : "";
     string c2 = (lr.need2.length() > 0) ? " " + lr.need2.replace_string(" ", "-") + (lr.need2active ? "" : " inactive") : "";
     
-    result += "</select>\n\r";
+    result += "</select><br>\n\r";
     result += "<div class=\"lep-effect" + c1 + "\" id=\"lep-id-r" + to_string(roomNo) + "-1\">";
     if (lr.furniture > 0) {
         result += allFurnitures[lr.furniture]["effect1"];
     }
-    result += "</div>";
+    result += "</div><br>";
     result += "<div class=\"lep-effect" + c2 + "\" id=\"lep-id-r" + to_string(roomNo) + "-2\">";
     if (lr.furniture > 0) {
         result += allFurnitures[lr.furniture]["effect2"];
