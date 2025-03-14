@@ -67,30 +67,37 @@ string getNeedForFurnitureId(int id, int need) {
 string makeOption(FurnitureItem fi, LepRoom room) {
     string result = "";
     string idStr = to_string(fi.id);
-    result += "<option ";
-    if (room.furniture == fi.id) {
-        result += "selected ";
+    if (fi.id > 0) {
+        result += "<option ";
+        if (room.furniture == fi.id) {
+            result += "selected ";
+        }
+        string needs = "(" + shortNeeds[allFurnitures[fi.id, "need1"]];
+        if (allFurnitures[fi.id, "need2"].length() > 0) {
+            needs += ", " + shortNeeds[allFurnitures[fi.id, "need2"]];
+        }
+        needs += ")";
+        result += "value=\"" + idStr + "\" data-id=\"" + idStr + "\" data-pic=\"" + fi.datapic + "\">" + fi.name + " " + needs + "</option>\n\r";
     }
-    string needs = "(" + shortNeeds[allFurnitures[fi.id, "need1"]];
-    if (allFurnitures[fi.id, "need2"].length() > 0) {
-        needs += ", " + shortNeeds[allFurnitures[fi.id, "need2"]];
-    }
-    needs += ")";
-    result += "value=\"" + idStr + "\" data-id=\"" + idStr + "\" data-pic=\"" + fi.datapic + "\">" + fi.name + " " + needs + "</option>\n\r";
 
     return result;
 }
 
 string makeComboBox(LepStuff lepData, int roomNo) {
     string result = "";
+    LepRoom lr = lepData.rooms[roomNo];
+
     result += "<select id=\"r" + to_string(roomNo) + "\" name=\"r" + to_string(roomNo) + "\" class=\"lep-choice\">\n\r";
-    result += "<option value=\"\">-- empty --</option>\n\r";
+    if (lr.furniture > 0) {
+        result += "<option value=\"\">-- empty --</option>\n\r";
+    } else {
+        result += "<option selected value=\"\">-- empty --</option>\n\r";
+    }
 
     foreach key, data in lepData.furnitures {
         result += makeOption(data, lepData.rooms[roomNo]);
     }
 
-    LepRoom lr = lepData.rooms[roomNo];
     string c1 = (lr.need1.length() > 0) ? " " + lr.need1.replace_string(" ", "-") + (lr.need1active ? "" : " inactive") : "";
     string c2 = (lr.need2.length() > 0) ? " " + lr.need2.replace_string(" ", "-") + (lr.need2active ? "" : " inactive") : "";
     
@@ -180,18 +187,13 @@ string insertIntoFromThisToThat(string fullText, string insertedText, string sta
     return fullText;
 }
 
-void main(string page_text_encoded) {
-    string page_text = page_text_encoded.choiceOverrideDecodePageText();
-    string newPage;
-
-    LepStuff ls = getRooms(page_text);
-
+string getCurrentConfigSummary(LepStuff ls) {
     string currentConfig = "<strong>Current configuration</strong><br>\n\r";
     foreach key in ls.rooms {
         LepRoom curRoom = ls.rooms[key];
         string need1 = curRoom.need1;
         string needs = need1;
-        if (!curRoom.need1active) {
+        if ((!curRoom.need1active)|(need1.length() == 0)) {
             needs = "<s>" + need1 + "</s> [inactive]";
         }
         string need2 = curRoom.need2;
@@ -206,7 +208,17 @@ void main(string page_text_encoded) {
         currentConfig += "Room " + to_string(curRoom.no + 1) + ": " + ls.furnitures[curRoom.furniture].name + " (" + needs + ")<br>";
     }
     currentConfig += "<br>";
+    return currentConfig;
+}
 
+void main(string page_text_encoded) {
+    string page_text = page_text_encoded.choiceOverrideDecodePageText();
+    string newPage;
+
+    LepStuff ls = getRooms(page_text);
+
+    string currentConfig = getCurrentConfigSummary(ls);
+  
     string missingMessage = "";
     string [int] missing = missingFurniture(ls.furnitures);
     foreach key, val in missing {
